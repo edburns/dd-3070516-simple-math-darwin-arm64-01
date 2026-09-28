@@ -1,5 +1,7 @@
-$scriptPath = Join-Path $PSScriptRoot 'math-tool.ps1'
-. $scriptPath -N 0
+BeforeAll {
+    $scriptPath = Join-Path $PSScriptRoot 'math-tool.ps1'
+    . $scriptPath -N 0
+}
 
 Describe 'Get-Fibonacci' {
     It 'returns zero for N=0 without incidental output' {
