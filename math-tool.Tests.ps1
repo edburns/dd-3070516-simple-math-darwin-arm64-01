@@ -38,11 +38,19 @@ Describe 'Get-Factorial' {
     }
 
     It 'returns one for N=1' {
-        Get-Factorial -N 1 | Should -Be 1
+        $result = @(Get-Factorial -N 1)
+
+        $result.Count | Should -Be 1
+        $result[0] | Should -Be 1
+        $result[0].GetType().Name | Should -Be 'Int64'
     }
 
     It 'returns the representative factorial value for N=5' {
-        Get-Factorial -N 5 | Should -Be 120
+        $result = @(Get-Factorial -N 5)
+
+        $result.Count | Should -Be 1
+        $result[0] | Should -Be 120
+        $result[0].GetType().Name | Should -Be 'Int64'
     }
 }
 
