@@ -19,6 +19,13 @@ Describe 'Get-Fibonacci' {
     It 'returns the representative Fibonacci value for N=10' {
         Get-Fibonacci -N 10 | Should -Be 55
     }
+
+    It 'returns an exact arbitrary-precision value for N=93' {
+        $result = Get-Fibonacci -N 93
+
+        $result | Should -Be ([System.Numerics.BigInteger]::Parse('12200160415121876738'))
+        $result.GetType().Name | Should -Be 'BigInteger'
+    }
 }
 
 Describe 'math-tool CLI' {
@@ -26,6 +33,7 @@ Describe 'math-tool CLI' {
         @{ N = 0; Expected = 0 }
         @{ N = 1; Expected = 1 }
         @{ N = 10; Expected = 55 }
+        @{ N = 93; Expected = '12200160415121876738' }
     ) {
         $processStartInfo = [System.Diagnostics.ProcessStartInfo]::new()
         $processStartInfo.FileName = (Get-Command pwsh).Source

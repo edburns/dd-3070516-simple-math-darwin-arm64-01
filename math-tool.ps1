@@ -12,12 +12,16 @@ function Get-Fibonacci {
         [int]$N
     )
 
-    [long]$previous = 0
-    [long]$current = 1
+    [System.Numerics.BigInteger]$previous = 0
+    [System.Numerics.BigInteger]$current = 1
     for ($index = 0; $index -lt $N; $index++) {
         $next = $previous + $current
         $previous = $current
         $current = $next
+    }
+
+    if ($previous -le [long]::MaxValue) {
+        return [long]$previous
     }
 
     return $previous
