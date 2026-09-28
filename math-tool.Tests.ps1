@@ -28,6 +28,32 @@ Describe 'Get-Fibonacci' {
     }
 }
 
+Describe 'Get-Factorial' {
+    It 'returns one for N=0' {
+        $result = @(Get-Factorial -N 0)
+
+        $result.Count | Should -Be 1
+        $result[0] | Should -Be 1
+        $result[0].GetType().Name | Should -Be 'Int64'
+    }
+
+    It 'returns one for N=1' {
+        $result = @(Get-Factorial -N 1)
+
+        $result.Count | Should -Be 1
+        $result[0] | Should -Be 1
+        $result[0].GetType().Name | Should -Be 'Int64'
+    }
+
+    It 'returns the representative factorial value for N=5' {
+        $result = @(Get-Factorial -N 5)
+
+        $result.Count | Should -Be 1
+        $result[0] | Should -Be 120
+        $result[0].GetType().Name | Should -Be 'Int64'
+    }
+}
+
 Describe 'math-tool CLI' {
     It 'writes exactly one result line for N=<N>' -TestCases @(
         @{ N = 0; Expected = 0 }
@@ -57,5 +83,63 @@ Describe 'math-tool CLI' {
         $process.ExitCode | Should -Be 0
         $stderr | Should -Be ''
         $stdout | Should -Be "Fibonacci($N) = $Expected$([Environment]::NewLine)"
+    }
+
+    It 'writes exactly one result line for explicit Fibonacci operation' {
+        $processStartInfo = [System.Diagnostics.ProcessStartInfo]::new()
+        $processStartInfo.FileName = (Get-Command pwsh).Source
+        $processStartInfo.UseShellExecute = $false
+        $processStartInfo.RedirectStandardOutput = $true
+        $processStartInfo.RedirectStandardError = $true
+        [void]$processStartInfo.ArgumentList.Add('-NoLogo')
+        [void]$processStartInfo.ArgumentList.Add('-NoProfile')
+        [void]$processStartInfo.ArgumentList.Add('-File')
+        [void]$processStartInfo.ArgumentList.Add($scriptPath)
+        [void]$processStartInfo.ArgumentList.Add('-N')
+        [void]$processStartInfo.ArgumentList.Add('10')
+        [void]$processStartInfo.ArgumentList.Add('-Operation')
+        [void]$processStartInfo.ArgumentList.Add('fibonacci')
+
+        $process = [System.Diagnostics.Process]::new()
+        $process.StartInfo = $processStartInfo
+        [void]$process.Start()
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+
+        $process.ExitCode | Should -Be 0
+        $stderr | Should -Be ''
+        $stdout | Should -Be "Fibonacci(10) = 55$([Environment]::NewLine)"
+    }
+
+    It 'writes exactly one result line for explicit factorial operation' -TestCases @(
+        @{ N = 0; Expected = 1 }
+        @{ N = 1; Expected = 1 }
+        @{ N = 5; Expected = 120 }
+    ) {
+        $processStartInfo = [System.Diagnostics.ProcessStartInfo]::new()
+        $processStartInfo.FileName = (Get-Command pwsh).Source
+        $processStartInfo.UseShellExecute = $false
+        $processStartInfo.RedirectStandardOutput = $true
+        $processStartInfo.RedirectStandardError = $true
+        [void]$processStartInfo.ArgumentList.Add('-NoLogo')
+        [void]$processStartInfo.ArgumentList.Add('-NoProfile')
+        [void]$processStartInfo.ArgumentList.Add('-File')
+        [void]$processStartInfo.ArgumentList.Add($scriptPath)
+        [void]$processStartInfo.ArgumentList.Add('-N')
+        [void]$processStartInfo.ArgumentList.Add([string]$N)
+        [void]$processStartInfo.ArgumentList.Add('-Operation')
+        [void]$processStartInfo.ArgumentList.Add('factorial')
+
+        $process = [System.Diagnostics.Process]::new()
+        $process.StartInfo = $processStartInfo
+        [void]$process.Start()
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $stderr = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+
+        $process.ExitCode | Should -Be 0
+        $stderr | Should -Be ''
+        $stdout | Should -Be "Factorial($N) = $Expected$([Environment]::NewLine)"
     }
 }
